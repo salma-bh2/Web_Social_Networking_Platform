@@ -1,4 +1,41 @@
+# Variables d'environnement (SECRETS - NE JAMAIS PUSHER)
 .env
 .env.*
-uploads/
+!.env.example
+
+# Dépendances
 node_modules/
+
+# Fichiers uploadés par les utilisateurs
+uploads/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Tests coverage
+coverage/
+.nyc_output/
+
+# Build / Distribution
+dist/
+build/
+
+# IDE / Editeurs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Système d'exploitation
+.DS_Store
+Thumbs.db
+
+# Debug
+*.pid
+*.seed
+
+# Cache
+.cache/
+.npm/

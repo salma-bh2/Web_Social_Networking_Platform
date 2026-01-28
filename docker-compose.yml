@@ -1,0 +1,30 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: platform_v4_mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpass
+      MONGO_INITDB_DATABASE: social
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: platform_v4_api
+    env_file:
+      - ./backend/.env.docker
+    depends_on:
+      - mongo
+    ports:
+      - "4000:4000"
+    volumes:
+      # Persister les uploads en dehors du container
+      - ./backend/uploads:/app/uploads
+
+volumes:
+  mongo_data:

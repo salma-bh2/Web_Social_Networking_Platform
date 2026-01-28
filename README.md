@@ -68,31 +68,6 @@ Le projet est conçu avec une **architecture moderne et scalable**, répondant a
 
 ---
 
-## 🏗️ Architecture
-
-```
-Web_Social_Networking_Platform/
-├── backend/                 # API REST Node.js/Express
-│   ├── src/
-│   │   ├── config/         # Configuration (DB, env, logger)
-│   │   ├── models/         # Schémas Mongoose
-│   │   ├── controllers/    # Logique HTTP
-│   │   ├── services/       # Logique métier
-│   │   ├── routes/         # Endpoints Express
-│   │   ├── middlewares/    # Auth, validation, errors
-│   │   ├── validators/     # Schémas Zod
-│   │   └── utils/          # Helpers (JWT, pagination)
-│   └── README.md           # Documentation Backend
-│
-├── frontend/               # Application React SPA
-│   └── README.md           # Documentation Frontend
-│
-├── docker-compose.yml      # Orchestration des services
-└── README.md               # Ce fichier
-```
-
----
-
 ## 🛠️ Stack Technique
 
 ### Backend
@@ -225,12 +200,6 @@ Ce projet est réalisé dans le cadre de la formation **JobInTech Rabat 2025**.
 
 ---
 
-## 🤝 Auteurs
+## 👨‍💻 Auteur
 
-**Équipe Full-Stack JobInTech Rabat 2025**
-
----
-
-<p align="center">
-  Développé avec ❤️ pour le projet de fin de formation
-</p>
+**Houssam El Motaouakkel** - [@houssam-elmotaouakkel](https://github.com/houssam-elmotaouakkel)

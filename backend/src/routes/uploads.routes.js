@@ -8,12 +8,14 @@ const validateParams = require("../middlewares/validateParams.middleware");
 
 const UploadsController = require("../controllers/uploads.controller");
 const { filenameParamsSchema } = require("../validators/uploads.validators");
+const { uploadsLimiter } = require("../middlewares/rateLimiters.middleware");
 
 
 // Thread media upload: POST http://localhost:4000/uploads/thread-media
 router.post(
   "/uploads/thread-media",
   authMiddleware,
+  uploadsLimiter,
   upload.single("file"),
   asyncHandler(async (req, res) => {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });

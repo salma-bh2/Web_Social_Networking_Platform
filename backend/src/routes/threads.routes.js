@@ -12,10 +12,12 @@ const validateParams = require("../middlewares/validateParams.middleware");
 const ThreadsController = require("../controllers/threads.controller");
 const { createThreadSchema, threadIdParamsSchema } = require("../validators/threads.validators");
 const { createReplySchema, replyIdParamsSchema } = require("../validators/replies.validators");
+const { writeLimiter } = require("../middlewares/rateLimiters.middleware");
 
 // create Threads
 router.post( // POST http://localhost:4000/api/threads
   "/threads",
+  authMiddleware,
   authMiddleware,
   validateBody(createThreadSchema),
   asyncHandler(ThreadsController.create)
@@ -33,6 +35,7 @@ router.get( // GET http://localhost:4000/api/threads/:threadId
 router.post( // POST http://localhost:4000/api/threads/:threadId/replies
   "/threads/:threadId/replies",
   authMiddleware,
+  writeLimiter,
   validateParams(threadIdParamsSchema),
   validateBody(createReplySchema),
   asyncHandler(ThreadsController.reply)

@@ -1,3 +1,4 @@
+// src/controllers/notifications.controller.js
 const NotificationsService = require("../services/notifications.service");
 
 async function list(req, res) {
@@ -22,4 +23,9 @@ async function markAllRead(req, res) {
   return res.status(200).json(data);
 }
 
-module.exports = { list, markRead, markAllRead };
+async function unreadCount(req, res) {
+  const data = await NotificationsService.getUnreadCount({ userId: req.user.id });
+  return res.status(200).json(data);
+}
+
+module.exports = { list, markRead, markAllRead, unreadCount };

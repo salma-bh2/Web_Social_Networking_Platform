@@ -1,3 +1,4 @@
+// src/services/notifications.service.js
 const mongoose = require("mongoose");
 const Notification = require("../models/Notification.model");
 const User = require("../models/User.model");
@@ -118,4 +119,9 @@ async function markAllRead({ userId }) {
   return { message: "All marked as read" };
 }
 
-module.exports = { createOnce, list, markRead, markAllRead };
+async function getUnreadCount({ userId }) {
+  const unreadCount = await Notification.countDocuments({ userId, isRead: false });
+  return { unreadCount };
+} 
+
+module.exports = { createOnce, list, markRead, markAllRead, getUnreadCount };

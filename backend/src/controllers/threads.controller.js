@@ -1,3 +1,4 @@
+// src/controllers/threads.controller.js
 const ThreadsService = require("../services/threads.service");
 
 async function create(req, res) {
@@ -33,9 +34,19 @@ async function remove(req, res) {
   return res.status(200).json(data);
 }
 
+async function removeReply(req, res) {
+  const data = await ThreadsService.deleteReply({
+    userId: req.user.id,
+    replyId: req.params.replyId,
+  });
+  return res.status(200).json(data);
+}
+
+
 module.exports = {
     create,
     getOne,
     reply,
-    remove
+    remove,
+    removeReply
 };

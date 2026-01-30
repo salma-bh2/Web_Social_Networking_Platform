@@ -1,3 +1,4 @@
+//src/routes/threads.routes.js
 const express = require("express");
 const router = express.Router();
 
@@ -10,10 +11,10 @@ const validateParams = require("../middlewares/validateParams.middleware");
 
 const ThreadsController = require("../controllers/threads.controller");
 const { createThreadSchema, threadIdParamsSchema } = require("../validators/threads.validators");
-const { createReplySchema } = require("../validators/replies.validators");
+const { createReplySchema, replyIdParamsSchema } = require("../validators/replies.validators");
 
 // create Threads
-router.post(
+router.post( // POST http://localhost:4000/api/threads
   "/threads",
   authMiddleware,
   validateBody(createThreadSchema),
@@ -21,7 +22,7 @@ router.post(
 );
 
 // get thread with replies
-router.get(
+router.get( // GET http://localhost:4000/api/threads/:threadId
   "/threads/:threadId",
   authMiddleware,
   validateParams(threadIdParamsSchema),
@@ -29,7 +30,7 @@ router.get(
 );
 
 // create Replies on threads
-router.post(
+router.post( // POST http://localhost:4000/api/threads/:threadId/replies
   "/threads/:threadId/replies",
   authMiddleware,
   validateParams(threadIdParamsSchema),
@@ -38,11 +39,20 @@ router.post(
 );
 
 // delete thread
-router.delete(
+router.delete( // DELETE http://localhost:4000/api/threads/:threadId
   "/threads/:threadId",
   authMiddleware,
   validateParams(threadIdParamsSchema),
   asyncHandler(ThreadsController.remove)
 );
+
+// delete reply
+router.delete( // DELETE http://localhost:4000/api/replies/:replyId
+  "/replies/:replyId",
+  authMiddleware,
+  validateParams(replyIdParamsSchema),
+  asyncHandler(ThreadsController.removeReply)
+);
+
 
 module.exports = router;

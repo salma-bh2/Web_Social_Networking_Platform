@@ -1,3 +1,4 @@
+//src/routes/notifications.routes.js
 const express = require("express");
 const router = express.Router();
 
@@ -17,6 +18,12 @@ router.get( // GET http://localhost:4000/api/notifications
   authMiddleware,
   validateQuery(notificationsQuerySchema),
   asyncHandler(NotificationsController.list)
+);
+
+router.get( // GET http://localhost:4000/api/notifications/unread-count
+  "/notifications/unread-count",
+  authMiddleware,
+  asyncHandler(NotificationsController.unreadCount)
 );
 
 router.patch( // PATCH http://localhost:4000/api/notifications/:notificationId/read

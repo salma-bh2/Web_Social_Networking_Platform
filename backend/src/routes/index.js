@@ -12,6 +12,7 @@ const feedRoutes = require("./feed.routes");
 const notificationsRoutes = require("./notifications.routes");
 const uploadsRoutes = require("./uploads.routes");
 const settingsRoutes = require("./settings.routes");
+const followsExtraRoutes = require("./followsExtra.routes")
 
 
 
@@ -24,6 +25,7 @@ router.use("/", feedRoutes);
 router.use("/", notificationsRoutes);
 router.use("/", uploadsRoutes);
 router.use("/", settingsRoutes);
+router.use("/", followsExtraRoutes);
 
 
 module.exports = router;

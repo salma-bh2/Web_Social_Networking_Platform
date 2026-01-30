@@ -1,3 +1,4 @@
+// src/services/threads.service.js
 const Thread = require("../models/Thread.model");
 const Reply = require("../models/Reply.model");
 const Follow = require("../models/Follow.model");
@@ -139,9 +140,29 @@ async function deleteThread({ userId, threadId }) {
   return { message: "Thread deleted" };
 }
 
+async function deleteReply({ userId, replyId }) {
+  const reply = await Reply.findById(replyId).select("_id authorId");
+  if (!reply) {
+    const err = new Error("Reply not found");
+    err.status = 404;
+    throw err;
+  }
+
+  if (reply.authorId.toString() !== userId.toString()) {
+    const err = new Error("Forbidden");
+    err.status = 403;
+    throw err;
+  }
+
+  await Reply.findOneAndDelete({ _id: reply._id });
+  return { message: "Reply deleted" };
+}
+
+
 module.exports = {
     createThread,
     getThreadWithReplies,
     createReply,
-    deleteThread
+    deleteThread,
+    deleteReply
 };

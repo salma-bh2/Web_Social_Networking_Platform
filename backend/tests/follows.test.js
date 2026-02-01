@@ -39,7 +39,7 @@ describe("Follows", () => {
 
     // B sends follow request to A (private => should be pending/requested)
     const followReq = await request(app)
-      .post(`/api/users/${userAId}/follow`)
+      .post(`/api/follows/users/${userAId}/follow`)
       .set(bearer(tokenB));
 
     expect([200, 201]).toContain(followReq.statusCode);

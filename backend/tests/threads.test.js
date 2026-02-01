@@ -15,7 +15,7 @@ describe("Threads", () => {
     const tokenA = loginA.body.token;
 
     const threadRes = await request(app)
-      .post("/api/threads")
+      .post("/api")
       .set(bearer(tokenA))
       .send({ content: "hello", mediaUrls: [], visibility: "PUBLIC" });
 
@@ -32,7 +32,7 @@ describe("Threads", () => {
     const tokenB = loginB.body.token;
 
     const replyRes = await request(app)
-      .post(`/api/threads/${threadId}/replies`)
+      .post(`/api/${threadId}/replies`)
       .set(bearer(tokenB))
       .send({ content: "reply here" });
 
@@ -48,7 +48,7 @@ describe("Threads", () => {
 
     // Re-create reply so A tries to delete B's reply (forbidden)
     const replyRes2 = await request(app)
-      .post(`/api/threads/${threadId}/replies`)
+      .post(`/api/${threadId}/replies`)
       .set(bearer(tokenB))
       .send({ content: "reply 2" });
 

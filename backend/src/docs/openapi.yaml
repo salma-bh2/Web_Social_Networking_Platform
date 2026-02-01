@@ -1,0 +1,596 @@
+openapi: 3.0.3
+info:
+  title: Web Social Networking Platform API
+  version: 1.0.0
+  description: API REST - PFE Social Network (Express + MongoDB)
+
+servers:
+  - url: http://localhost:4000
+    description: Local dev
+  - url: https://YOUR-SERVICE.onrender.com
+    description: Render (replace with your real URL)
+
+tags:
+  - name: Health
+  - name: Auth
+  - name: Users
+  - name: Follows
+  - name: Social
+  - name: Threads
+  - name: Replies
+  - name: Reactions
+  - name: Feed
+  - name: Notifications
+  - name: Uploads
+  - name: Settings
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    UserId:
+      in: path
+      name: userId
+      required: true
+      schema: { type: string, pattern: "^[0-9a-fA-F]{24}$" }
+    RequestId:
+      in: path
+      name: requestId
+      required: true
+      schema: { type: string, pattern: "^[0-9a-fA-F]{24}$" }
+    ThreadId:
+      in: path
+      name: threadId
+      required: true
+      schema: { type: string, pattern: "^[0-9a-fA-F]{24}$" }
+    ReplyId:
+      in: path
+      name: replyId
+      required: true
+      schema: { type: string, pattern: "^[0-9a-fA-F]{24}$" }
+    NotificationId:
+      in: path
+      name: notificationId
+      required: true
+      schema: { type: string, pattern: "^[0-9a-fA-F]{24}$" }
+    Filename:
+      in: path
+      name: filename
+      required: true
+      schema: { type: string, minLength: 1, maxLength: 255 }
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        message: { type: string, example: "Something went wrong" }
+        code: { type: string, example: "INTERNAL_ERROR" }
+        requestId: { type: string, example: "uuid" }
+
+    RegisterInput:
+      type: object
+      required: [username, email, password]
+      properties:
+        username: { type: string, example: "houssam7" }
+        email: { type: string, example: "user@test.com" }
+        password: { type: string, example: "Password123!" }
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, example: "user@test.com" }
+        password: { type: string, example: "Password123!" }
+
+    AuthResponse:
+      type: object
+      properties:
+        token: { type: string, example: "jwt..." }
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      properties:
+        id: { type: string, example: "507f1f77bcf86cd799439011" }
+        username: { type: string, example: "houssam7" }
+        email: { type: string, example: "user@test.com" }
+        isPrivate: { type: boolean, example: false }
+        bio: { type: string, example: "" }
+        avatarUrl: { type: string, example: "" }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    UpdatePrivacyInput:
+      type: object
+      required: [isPrivate]
+      properties:
+        isPrivate: { type: boolean, example: true }
+
+    UpdateMeInput:
+      type: object
+      properties:
+        username: { type: string, minLength: 3, maxLength: 30 }
+        bio: { type: string, maxLength: 300 }
+
+    CreateThreadInput:
+      type: object
+      required: [content]
+      properties:
+        content: { type: string, minLength: 1, maxLength: 2000, example: "Hello world" }
+        mediaUrls:
+          type: array
+          items: { type: string }
+          default: []
+        visibility:
+          type: string
+          enum: [PUBLIC, FOLLOWERS]
+          default: PUBLIC
+
+    CreateReplyInput:
+      type: object
+      required: [content]
+      properties:
+        content: { type: string, minLength: 1, maxLength: 2000, example: "Nice!" }
+
+    FollowRequestItem:
+      type: object
+      properties:
+        requestId: { type: string }
+        followerId: { type: string }
+        status: { type: string, example: "PENDING" }
+        createdAt: { type: string, format: date-time }
+
+    CreateReactionInput:
+      type: object
+      required: [targetType, targetId]
+      properties:
+        targetType: { type: string, enum: [THREAD, REPLY] }
+        targetId: { type: string, pattern: "^[0-9a-fA-F]{24}$" }
+        type: { type: string, enum: [LIKE], default: LIKE }
+
+    UpdateSettingsInput:
+      type: object
+      properties:
+        notificationsPrefs:
+          type: object
+          properties:
+            followRequest: { type: boolean }
+            followAccepted: { type: boolean }
+            reply: { type: boolean }
+            likeThread: { type: boolean }
+            likeReply: { type: boolean }
+
+security:
+  - bearerAuth: []
+
+paths:
+  /:
+    get:
+      tags: [Health]
+      summary: Root message
+      security: []
+      responses:
+        "200":
+          description: OK
+
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  uptime: { type: number, example: 123.45 }
+
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RegisterInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { $ref: "#/components/schemas/User" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/users/{userId}:
+    get:
+      tags: [Users]
+      summary: Get user profile by id
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/users/me:
+    patch:
+      tags: [Users]
+      summary: Update my profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateMeInput" }
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/users/me/privacy:
+    patch:
+      tags: [Users]
+      summary: Update privacy (public/private)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdatePrivacyInput" }
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/users/me/avatar:
+    post:
+      tags: [Users]
+      summary: Upload my avatar
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        "201": { description: Created }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/follows/users/{userId}/follow:
+    post:
+      tags: [Follows]
+      summary: Follow a user (or send request if private)
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        "200": { description: OK }
+        "201": { description: Created }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [Follows]
+      summary: Unfollow a user
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/follows/follow-requests:
+    get:
+      tags: [Follows]
+      summary: List follow requests received by me
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requests:
+                    type: array
+                    items: { $ref: "#/components/schemas/FollowRequestItem" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/follows/follow-requests/{requestId}/accept:
+    post:
+      tags: [Follows]
+      summary: Accept a follow request
+      parameters:
+        - $ref: "#/components/parameters/RequestId"
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/follows/follow-requests/{requestId}/reject:
+    post:
+      tags: [Follows]
+      summary: Reject a follow request
+      parameters:
+        - $ref: "#/components/parameters/RequestId"
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/social/users/{userId}/followers:
+    get:
+      tags: [Social]
+      summary: List followers
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/social/users/{userId}/following:
+    get:
+      tags: [Social]
+      summary: List following
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/threads:
+    post:
+      tags: [Threads]
+      summary: Create thread
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateThreadInput" }
+      responses:
+        "201": { description: Created }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /api/threads/{threadId}:
+    get:
+      tags: [Threads]
+      summary: Get thread with replies
+      parameters:
+        - $ref: "#/components/parameters/ThreadId"
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [Threads]
+      summary: Delete thread (owner)
+      parameters:
+        - $ref: "#/components/parameters/ThreadId"
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/threads/{threadId}/replies:
+    post:
+      tags: [Replies]
+      summary: Reply to a thread
+      parameters:
+        - $ref: "#/components/parameters/ThreadId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateReplyInput" }
+      responses:
+        "201": { description: Created }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/replies/{replyId}:
+    delete:
+      tags: [Replies]
+      summary: Delete reply (owner)
+      parameters:
+        - $ref: "#/components/parameters/ReplyId"
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/reactions/toggle-like:
+    post:
+      tags: [Reactions]
+      summary: Toggle like (THREAD/REPLY)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateReactionInput" }
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /api/feed:
+    get:
+      tags: [Feed]
+      summary: Get feed (cursor pagination)
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+        - in: query
+          name: cursor
+          schema: { type: string, nullable: true }
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/notifications:
+    get:
+      tags: [Notifications]
+      summary: List notifications (cursor pagination)
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+        - in: query
+          name: cursor
+          schema: { type: string, nullable: true }
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/notifications/unread-count:
+    get:
+      tags: [Notifications]
+      summary: Get unread notifications count
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/notifications/{notificationId}/read:
+    patch:
+      tags: [Notifications]
+      summary: Mark a notification as read
+      parameters:
+        - $ref: "#/components/parameters/NotificationId"
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/notifications/read-all:
+    patch:
+      tags: [Notifications]
+      summary: Mark all notifications as read
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/uploads/thread-media:
+    post:
+      tags: [Uploads]
+      summary: Upload thread media (multer)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201": { description: Created }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/uploads/{filename}:
+    delete:
+      tags: [Uploads]
+      summary: Delete uploaded file
+      parameters:
+        - $ref: "#/components/parameters/Filename"
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/settings/me:
+    get:
+      tags: [Settings]
+      summary: Get my settings
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    patch:
+      tags: [Settings]
+      summary: Update my settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateSettingsInput" }
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "400": { $ref: "#/components/responses/BadRequest" }

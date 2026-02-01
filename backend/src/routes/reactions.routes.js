@@ -1,3 +1,4 @@
+// backend/src/routes/reactions.routes.js
 const express = require("express");
 const router = express.Router();
 
@@ -11,8 +12,8 @@ const ReactionsController = require("../controllers/reactions.controller");
 const { createReactionSchema } = require("../validators/reactions.validators");
 
 // toggle like
-router.post(
-  "/reactions/toggle-like",
+router.post( // POST http://localhost:4000/api/reactions/toggle-like
+  "/toggle-like",
   authMiddleware,
   validateBody(createReactionSchema),
   asyncHandler(ReactionsController.toggleLike)

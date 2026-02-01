@@ -1,3 +1,4 @@
+// backend/src/validators/uploads.validators.js
 const { z } = require("zod");
 
 const avatarUploadQuerySchema = z.object({}).optional();

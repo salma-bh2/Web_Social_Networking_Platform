@@ -9,6 +9,7 @@ const path = require("path");
 const crypto = require("node:crypto");
 const mongoSanitize = require("@exortek/express-mongo-sanitize");
 const hpp = require("hpp");
+const { mountSwagger } = require("./docs/swagger");
 const uploadsDir = process.env.UPLOAD_DIR || "uploads";
 
 const app = express();
@@ -48,6 +49,11 @@ app.use(
 
 // JSON middleware
 app.use(express.json({ limit: "1mb" }));
+
+// Swagger
+if (process.env.NODE_ENV !== "production") {
+  mountSwagger(app);
+}
 
 // URL-encoded middleware
 app.use(express.urlencoded({ extended: true }));

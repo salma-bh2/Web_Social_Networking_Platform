@@ -14,27 +14,27 @@ const {
 } = require("../validators/notifications.validators");
 
 router.get( // GET http://localhost:4000/api/notifications
-  "/notifications",
+  "/",
   authMiddleware,
   validateQuery(notificationsQuerySchema),
   asyncHandler(NotificationsController.list)
 );
 
 router.get( // GET http://localhost:4000/api/notifications/unread-count
-  "/notifications/unread-count",
+  "/unread-count",
   authMiddleware,
   asyncHandler(NotificationsController.unreadCount)
 );
 
 router.patch( // PATCH http://localhost:4000/api/notifications/:notificationId/read
-  "/notifications/:notificationId/read",
+  "/:notificationId/read",
   authMiddleware,
   validateParams(notificationIdParamsSchema),
   asyncHandler(NotificationsController.markRead)
 );
 
 router.patch( // PATCH http://localhost:4000/api/notifications/read-all
-  "/notifications/read-all",
+  "/read-all",
   authMiddleware,
   asyncHandler(NotificationsController.markAllRead)
 );

@@ -1,3 +1,4 @@
+// backend/src/validators/notifications.validators.js
 const { z } = require("zod");
 
 const notificationIdParamsSchema = z.object({

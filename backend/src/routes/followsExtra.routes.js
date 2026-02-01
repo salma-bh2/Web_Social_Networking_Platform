@@ -1,3 +1,4 @@
+// backend/src/routes/followsExtra.routes.js
 const express = require("express");
 const router = express.Router();
 
@@ -10,7 +11,7 @@ const validateQuery = require("../middlewares/validateQuery.middleware");
 const FollowsExtraController = require("../controllers/followsExtra.controller");
 const { userIdParamsSchema, listQuerySchema } = require("../validators/followsExtra.validators");
 
-router.get(
+router.get( // GET http://localhost:4000/api/social/users/:userId/followers
   "/users/:userId/followers",
   authMiddleware,
   validateParams(userIdParamsSchema),
@@ -18,7 +19,7 @@ router.get(
   asyncHandler(FollowsExtraController.followers)
 );
 
-router.get(
+router.get( // GET http://localhost:4000/api/social/users/:userId/following
   "/users/:userId/following",
   authMiddleware,
   validateParams(userIdParamsSchema),

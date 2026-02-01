@@ -17,15 +17,17 @@ const followsExtraRoutes = require("./followsExtra.routes")
 
 
 router.use("/auth", authRoutes);
-router.use("/", followsRoutes); // contient /users/:id/follow et /follow-requests...
-router.use("/users", usersRoutes); // contient /users/me/privacy
-router.use("/", threadsRoutes);
-router.use("/", reactionsRoutes);
-router.use("/", feedRoutes);
-router.use("/", notificationsRoutes);
-router.use("/", uploadsRoutes);
-router.use("/", settingsRoutes);
-router.use("/", followsExtraRoutes);
+router.use("/users", usersRoutes);
+
+router.use("/follows", followsRoutes); 
+router.use("/social", followsExtraRoutes);
+
+router.use("/threads", threadsRoutes);
+router.use("/reactions", reactionsRoutes);
+router.use("/feed", feedRoutes);
+router.use("/notifications", notificationsRoutes);
+router.use("/uploads", uploadsRoutes);
+router.use("/settings", settingsRoutes);
 
 
 module.exports = router;

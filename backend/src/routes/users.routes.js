@@ -1,3 +1,4 @@
+// backend/src/routes/users.routes.js
 const express = require("express");
 const router = express.Router();
 
@@ -13,7 +14,7 @@ const { upload } = require("../config/multer");
 
 
 
-router.get( // GET http://localhost:4000/users/:userId
+router.get( // GET http://localhost:4000/api/users/:userId
   "/:userId",
   authMiddleware,
   validateParams(userIdParamsSchema),
@@ -22,7 +23,7 @@ router.get( // GET http://localhost:4000/users/:userId
 
 
 
-// Edit me: PATCH http://localhost:4000/users/me
+// Edit me: PATCH http://localhost:4000/api/users/me
 router.patch(
   "/me",
   authMiddleware,
@@ -32,7 +33,7 @@ router.patch(
 
 
 
-router.patch( // PATCH http://localhost:4000/users/me/privacy
+router.patch( // PATCH http://localhost:4000/api/users/me/privacy
   "/me/privacy",
   authMiddleware,
   validateBody(updatePrivacySchema),
@@ -40,7 +41,7 @@ router.patch( // PATCH http://localhost:4000/users/me/privacy
 );
 
 
-router.post( // POST http://localhost:4000/users/me/avatar
+router.post( // POST http://localhost:4000/api/users/me/avatar
   "/me/avatar",
   authMiddleware,
   upload.single("avatar"),

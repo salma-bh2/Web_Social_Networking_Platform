@@ -1,3 +1,4 @@
+// backend/src/routes/settings.routes.js
 const express = require("express");
 const router = express.Router();
 
@@ -9,13 +10,13 @@ const SettingsController = require("../controllers/settings.controller");
 const { updateSettingsSchema } = require("../validators/settings.validators");
 
 router.get(      // GET http://localhost:4000/api/settings/me
-  "/settings/me",
+  "/me",
   authMiddleware,
   asyncHandler(SettingsController.getMe)
 );
 
 router.patch(      // PATCH http://localhost:4000/api/settings/me   
-  "/settings/me",
+  "/me",
   authMiddleware,
   validateBody(updateSettingsSchema),
   asyncHandler(SettingsController.updateMe)

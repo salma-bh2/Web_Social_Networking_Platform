@@ -16,8 +16,7 @@ const { writeLimiter } = require("../middlewares/rateLimiters.middleware");
 
 // create Threads
 router.post( // POST http://localhost:4000/api/threads
-  "/threads",
-  authMiddleware,
+  "/",
   authMiddleware,
   validateBody(createThreadSchema),
   asyncHandler(ThreadsController.create)
@@ -25,7 +24,7 @@ router.post( // POST http://localhost:4000/api/threads
 
 // get thread with replies
 router.get( // GET http://localhost:4000/api/threads/:threadId
-  "/threads/:threadId",
+  "/:threadId",
   authMiddleware,
   validateParams(threadIdParamsSchema),
   asyncHandler(ThreadsController.getOne)
@@ -33,7 +32,7 @@ router.get( // GET http://localhost:4000/api/threads/:threadId
 
 // create Replies on threads
 router.post( // POST http://localhost:4000/api/threads/:threadId/replies
-  "/threads/:threadId/replies",
+  "/:threadId/replies",
   authMiddleware,
   writeLimiter,
   validateParams(threadIdParamsSchema),
@@ -43,7 +42,7 @@ router.post( // POST http://localhost:4000/api/threads/:threadId/replies
 
 // delete thread
 router.delete( // DELETE http://localhost:4000/api/threads/:threadId
-  "/threads/:threadId",
+  "/:threadId",
   authMiddleware,
   validateParams(threadIdParamsSchema),
   asyncHandler(ThreadsController.remove)

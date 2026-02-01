@@ -1,3 +1,4 @@
+// backend/src/validators/threads.validators.js
 const { z } = require("zod");
 
 const createThreadSchema = z.object({

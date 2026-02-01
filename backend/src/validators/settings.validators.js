@@ -1,3 +1,4 @@
+// backend/src/validators/settings.validators.js
 const { z } = require("zod");
 
 const updateSettingsSchema = z.object({

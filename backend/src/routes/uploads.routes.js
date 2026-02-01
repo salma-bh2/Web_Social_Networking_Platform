@@ -1,3 +1,4 @@
+// backend/src/routes/uploads.routes.js 
 const express = require("express");
 const router = express.Router();
 
@@ -11,9 +12,9 @@ const { filenameParamsSchema } = require("../validators/uploads.validators");
 const { uploadsLimiter } = require("../middlewares/rateLimiters.middleware");
 
 
-// Thread media upload: POST http://localhost:4000/uploads/thread-media
+// Thread media upload: POST http://localhost:4000/api/uploads/thread-media
 router.post(
-  "/uploads/thread-media",
+  "/thread-media",
   authMiddleware,
   uploadsLimiter,
   upload.single("file"),
@@ -24,9 +25,9 @@ router.post(
 );
 
 
-// DELETE file: DELETE http://localhost:4000/uploads/:filename
+// DELETE file: DELETE http://localhost:4000/api/uploads/:filename
 router.delete(
-  "/uploads/:filename",
+  "/:filename",
   authMiddleware,
   validateParams(filenameParamsSchema),
   asyncHandler(UploadsController.remove)

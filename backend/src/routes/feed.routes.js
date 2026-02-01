@@ -9,8 +9,8 @@ const validateQuery = require("../middlewares/validateQuery.middleware");
 const FeedController = require("../controllers/feed.controller");
 const { feedQuerySchema } = require("../validators/feed.validators");
 
-router.get(
-  "/feed",
+router.get( // GET http://localhost:4000/api/feed
+  "/",
   authMiddleware,
   validateQuery(feedQuerySchema),
   asyncHandler(FeedController.get)

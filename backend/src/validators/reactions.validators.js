@@ -1,3 +1,4 @@
+// backend/src/validators/reactions.validators.js
 const { z } = require("zod");
 
 const createReactionSchema = z.object({
